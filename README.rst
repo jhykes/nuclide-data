@@ -27,10 +27,8 @@ the following keys:
 Contents
 --------
 
-The files in this package:
-
  * isotope_data.py -- Python script to read data files and create interface 
-                      to data.
+   to data.
  * isotope_data.txt -- NIST file with atomic weights and abundances
  * nuclear-wallet-cards.txt.gz -- Nuclear Wallet Card ASCII file
  * WC-format -- explanation of Nuclear Wallet Card ASCII format
