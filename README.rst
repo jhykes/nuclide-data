@@ -5,25 +5,36 @@ This script reads nuclide abundances, weights, and decay constants from
 NIST and NNDC data files and makes them accessible
 via Python functions, lists, and dictionaries.
 
+
+The three ways intended for public access of the data are:
+
+isotopes : dictionary whose keys are Z, and values are list of isotopes' A
+
+nuc(Z, A, E=0.) : function to return nuclide data for Z & A, 
+                   and (optionally) E, determining isomeric state.
+
+isomers(Z, A) : Return energy levels (in MeV) of isomeric 
+                 states for particular Z & A.
+
+
 The data for each nuclide is contained in a Python dictionary with
 the following keys:
 
-  * 'A' : atomic mass number (int)
-  * 'Z' : atomic number or number of protons (int)
   * 'symbol' : element symbol for this Z (string)
   * 'isomeric' : is this nuclide in an excited state (Boolean)
   * 'Jpi' : spin and parity (string)
-  * 'decay mode' : the type of radioactive decay, if applicable (string)
-  * 'branch fraction' : the branching fraction for a particular decay
-    mode (float in (0, 1])
-  * 'excitation energy' : excitation energy of isomer in MeV (float)
-  * 'Q-value' : Q-value of decay reaction in MeV (float)
   * 'half-life' : half life in seconds (float)
   * 'stable' : is nuclide stable (Boolean)
   * 'lambda' : decay constant in 1/seconds (float)
   * 'abundance' : isotopic abundance (float in [0, 1])
-  * 'weight' : atomic weight, dimensionless (float)
-  * 'mass excess' : mass excess in MeV (float)
+  * 'weight' : atomic weight, dimensionless (ufloat)
+  * 'mass excess' : mass excess in MeV (ufloat)
+  * 'decay modes' : a dictionary with the type of decay as the keys. The
+    dictionary contains
+      * 'Q-value' : Q-value of decay reaction in MeV (float)
+      * 'branch fraction' : the branching fraction for a particular decay
+        mode (float in (0, 1])
+
 
 Dependencies
 ------------

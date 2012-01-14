@@ -137,7 +137,7 @@ for line in wallet_lines:
     d = parse_one_wallet_line(line)
 
 
-isomer_keys = ['symbol', 'mass excess', 'abundance',
+isomer_keys = ['symbol', 'mass excess', 'abundance', 'isomeric',
                'Jpi', 'stable', 'half-life string', 'half-life']
 
 decay_keys = ['branch fraction', 'Q-value']
@@ -164,6 +164,8 @@ for el in wallet_nuclide_processed_list:
         # nuclide data not associated with decay
         for k in isomer_keys:
             isomer[k] = el[k]
+
+        isomer['lambda'] = np.log(2.) / isomer['half-life']
 
         if (Z,A) in nist_nuclides:
             isomer['weight'] = nist_nuclides[(Z,A)]['Relative Atomic Mass']
