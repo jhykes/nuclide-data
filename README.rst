@@ -1,7 +1,8 @@
-isotopic-data -- a Python interface to isotopic data
-----------------------------------------------------
+nuclide-data -- a Python interface to nuclide data
+--------------------------------------------------
 
-This small module reads NIST and NNDC data files and makes them accessible
+This script reads nuclide abundances, weights, and decay constants from
+NIST and NNDC data files and makes them accessible
 via Python functions, lists, and dictionaries.
 
 The data for each nuclide is contained in a Python dictionary with
@@ -24,6 +25,10 @@ the following keys:
   * 'weight' : atomic weight, dimensionless (float)
   * 'mass excess' : mass excess in MeV (float)
 
+Dependencies
+------------
+ * numpy
+ * uncertainties
 
 Contents
 --------
