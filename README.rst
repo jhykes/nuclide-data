@@ -16,20 +16,21 @@ the following keys:
   * 'branch fraction' : the branching fraction for a particular decay
     mode (float in (0, 1])
   * 'excitation energy' : excitation energy of isomer in MeV (float)
-  * 'Q' : Q-value of decay mode in MeV (float)
+  * 'Q-value' : Q-value of decay reaction in MeV (float)
   * 'half-life' : half life in seconds (float)
+  * 'stable' : is nuclide stable (Boolean)
   * 'lambda' : decay constant in 1/seconds (float)
   * 'abundance' : isotopic abundance (float in [0, 1])
   * 'weight' : atomic weight, dimensionless (float)
-  * 'weight mev' : atomic weight in MeV/c^2 (float)
+  * 'mass excess' : mass excess in MeV (float)
 
 
 Contents
 --------
 
- * isotope_data.py -- Python script to read data files and create interface 
+ * nuclide_data.py -- Python script to read data files and create interface 
    to data.
- * isotope_data.txt -- NIST file with atomic weights and abundances
+ * nist-nuclide-data.txt -- NIST file with atomic weights and abundances
  * nuclear-wallet-cards.txt.gz -- Nuclear Wallet Card ASCII file
  * WC-format -- explanation of Nuclear Wallet Card ASCII format
 
