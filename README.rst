@@ -10,11 +10,11 @@ The three ways intended for public access of the data are:
 
 isotopes : dictionary whose keys are Z, and values are list of isotopes' A
 
-nuc(Z, A, E=0.) : function to return nuclide data for Z & A, 
-                   and (optionally) E, determining isomeric state.
+nuclide_dict = nuc(Z, A, E=0.) : function to return nuclide data for Z & A, 
+and (optionally) E, determining isomeric state.
 
-isomers(Z, A) : Return energy levels (in MeV) of isomeric 
-                 states for particular Z & A.
+list_of_isomer_energies = isomers(Z, A) : Return energy levels (in MeV) of 
+isomeric states for particular Z & A.
 
 
 The data for each nuclide is contained in a Python dictionary with
