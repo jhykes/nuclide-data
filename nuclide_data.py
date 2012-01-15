@@ -116,7 +116,7 @@ def parse_one_wallet_line(line):
     d['Jpi'] = line[16:26].strip()
 
     d['isomeric'] = (line[4] == 'M')
-    d['excitation energy'] = do_if_present(line[42:49], lambda x: float(x))
+    d['excitation energy'] = do_if_present(line[42:49], lambda x: float(x), default=0.)
 
     d['decay mode'] = do_if_present(line[30:34], str)
     d['branch fraction'] = do_if_present(line[35:41], process_branch)
