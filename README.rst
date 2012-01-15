@@ -29,7 +29,7 @@ the following keys:
   * 'abundance' : isotopic abundance (float in [0, 1])
   * 'weight' : atomic weight, dimensionless (ufloat)
   * 'mass excess' : mass excess in MeV (ufloat)
-  * 'decay modes' : a dictionary with the type of decay as the keys. The
+  * 'decay modes' : a dictionary with the type of decay as the keys. Each
     dictionary contains
       * 'Q-value' : Q-value of decay reaction in MeV (float)
       * 'branch fraction' : the branching fraction for a particular decay

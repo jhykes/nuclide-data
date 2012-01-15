@@ -79,12 +79,17 @@ def nndc_unc(string, delimiter):
     a, b = map(float, string.split(delimiter))
     return unc.ufloat((a,b))
 
-def do_if_present(string, func):
+def nndc_abun(string, delimiter):
+    a, b = string.split(delimiter)
+    unc_string = "{0}({1})".format(float(a), int(b))
+    return unc.ufloat(unc_string)
+
+def do_if_present(string, func, default=None):
     string = string.strip()
     if string:
         return func(string)
     else:
-        return None
+        return default
     
 def process_branch(s):
     try:
@@ -96,7 +101,7 @@ def process_abundance(s):
     if s.startswith('100'):
         return 1.
     else:
-        return nndc_unc(s,'%') / 100.
+        return nndc_abun(s,'%') / 100.
 
 def parse_one_wallet_line(line):
     d = {}
@@ -106,7 +111,7 @@ def parse_one_wallet_line(line):
 
     d['mass excess'] = unc.ufloat(map(float, (line[97:105], line[105:113]))) # in MeV
     d['systematics mass'] = (line[114] == 'S')
-    d['abundance'] = do_if_present(line[81:96], process_abundance)
+    d['abundance'] = do_if_present(line[81:96], process_abundance, default=0.)
 
     d['Jpi'] = line[16:26].strip()
 
@@ -204,5 +209,7 @@ def isomers(Z, A):
 
     Energies in MeV.
     """
-    return nuclides[(Z,A)].keys()
+    isom = nuclides[(Z,A)].keys()
+    isom.sort()
+    return isom
 
