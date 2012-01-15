@@ -46,9 +46,11 @@ Contents
 
  * nuclide_data.py -- Python script to read data files and create interface 
    to data.
+ * test_nuclide_data.py -- unit tests to verify implementation of 
+   nuclide_data.py. These tests can be useful as examples.
  * nist-nuclide-data.txt -- NIST file with atomic weights and abundances
  * nuclear-wallet-cards.txt.gz -- Nuclear Wallet Card ASCII file
- * WC-format -- explanation of Nuclear Wallet Card ASCII format
+ * WC-format.pdf -- explanation of Nuclear Wallet Card ASCII format
 
 References
 ----------
