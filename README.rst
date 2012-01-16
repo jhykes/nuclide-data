@@ -17,6 +17,7 @@ The recommended ways to access the data are:
    for an element or nuclide. The input to this function is flexible:
 
       * ``element_weight = weights('U')`` element weight of U
+      * ``element_weight = weights(92)`` element weight of U
       * ``nuclide_weight = weights('U-235')`` isotopic weight of U-235
       * ``nuclide_weight = weights('U', 235)`` isotopic weight of U-235
       * ``nuclide_weight = weights(92, 235)`` isotopic weight of U-235
