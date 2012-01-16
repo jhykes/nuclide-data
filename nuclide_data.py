@@ -56,7 +56,6 @@ nist_nuclide_processed_list = []
 for raw_chunk in nist_nuclide_raw_list:
     nist_nuclide_processed_list.append( parse_one_chunk(raw_chunk) )
 
-
 nist_per_element = {}
 for nuclide in nist_nuclide_processed_list:
     Z = nuclide['Atomic Number']
@@ -72,6 +71,18 @@ for nuclide in nist_nuclide_processed_list:
     A = nuclide['Mass Number']
 
     nist_nuclides[(Z,A)] = nuclide
+
+z2sym = dict(
+          [ (Z, nist_per_element[Z][0]['Atomic Symbol']) for Z in range(1,119) ]
+            )
+
+sym2z = dict( [ (z2sym[k], k) for k in z2sym ] )
+
+atomic_weights = {}
+for Z in nist_per_element:
+    w = nist_per_element[Z][0]['Standard Atomic Weight']
+    if type(w) is not str:
+        atomic_weights[Z] = w
 
 # Nuclear wallet cards data ------------------------------
 
@@ -184,6 +195,43 @@ for el in wallet_nuclide_processed_list:
         isomer['decay modes'][el['decay mode']][k] = el[k]
 
 
+
+
+def return_nominal_value(Z_or_symbol, A, E, attribute):
+    """
+    Input
+    -----
+     * Z_or_symbol : can be either 'U', 92, or 'U-235'. If it is 'U-235',
+       then the A argument is ignored.
+     * A : atomic mass number
+     * E : excitation energy of isomer
+     * attribute : a valid nuclide data dictionary key
+    """
+    try:
+        # Is Z_or_symbol a fully specified nuclide, e.g., 'U-235'
+        if Z_or_symbol.find('-') > -1:
+            symbol, A = Z_or_symbol.split('-')
+            A = int(A)
+            Z = sym2z[symbol.title()]
+        else:
+            Z = sym2z[Z_or_symbol.title()]
+    except AttributeError:
+        Z = Z_or_symbol
+   
+    # testing for no A, then return elemental value
+    if A is None:
+        return atomic_weights[Z].nominal_value
+        
+    try:
+        return nuclides[(Z,A)][E][attribute].nominal_value
+    except ValueError:
+        return nuclides[(Z,A)][E][attribute]
+
+
+# ---------------------------------------------------------------------------- #
+# means intended for public access of data
+
+# list_of_As = isotopes[Z]
 isotopes = {}
 for (Z,A) in nuclides:
 
@@ -195,10 +243,9 @@ for (Z,A) in nuclides:
     isotopes[Z].sort()
 
 
-
 def nuc(Z, A, E=0.):
     """
-    Return nuclide data for Z, A, and (optionally) E, determining isomeric state.
+    Return nuclide data for Z, A, and (optionally) E of isomeric state.
     """
     return nuclides[(Z,A)][E]
 
@@ -212,4 +259,12 @@ def isomers(Z, A):
     isom = nuclides[(Z,A)].keys()
     isom.sort()
     return isom
+
+
+def weight(Z_or_symbol, A=None, E=0.):
+    """
+    Return atomic weight for Z, A, and (optionally) E of isomeric state.
+    """
+    return return_nominal_value(Z_or_symbol, A, E, 'weight')
+
 

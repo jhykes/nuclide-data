@@ -6,15 +6,22 @@ NIST and NNDC data files and makes them accessible
 via Python functions, lists, and dictionaries.
 
 
-The three ways intended for public access of the data are:
+The recommended ways to access the data are:
 
-``list_of_As = isotopes[Z]`` dictionary whose keys are Z, and values are list of isotopes' A
+ * ``list_of_As = isotopes[Z]`` dictionary whose keys are Z, and values are list of isotopes' A
+ * ``nuclide_dict = nuc(Z, A, E=0.)`` function to return nuclide data for Z & A, 
+   and (optionally) E, determining isomeric state.
+ * ``list_of_isomer_energies = isomers(Z, A)`` Return energy levels (in MeV) of 
+   isomeric states for particular Z & A.
+ * ``w = weights(Z_or_symbol, A=None, E=0.)`` Return atomic or isotopic weight
+   for an element or nuclide. The input to this function is flexible:
 
-``nuclide_dict = nuc(Z, A, E=0.)`` function to return nuclide data for Z & A, 
-and (optionally) E, determining isomeric state.
+      * ``element_weight = weights('U')`` element weight of U
+      * ``nuclide_weight = weights('U-235')`` isotopic weight of U-235
+      * ``nuclide_weight = weights('U', 235)`` isotopic weight of U-235
+      * ``nuclide_weight = weights(92, 235)`` isotopic weight of U-235
 
-``list_of_isomer_energies = isomers(Z, A)`` Return energy levels (in MeV) of 
-isomeric states for particular Z & A.
+These commands will return errors if the data is unavailable.
 
 
 The data for each nuclide is contained in a Python dictionary with

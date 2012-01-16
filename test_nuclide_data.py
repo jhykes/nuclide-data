@@ -67,3 +67,19 @@ def test_data():
         assert d['stable'] == stable[i]
 
 
+def test_weight():
+    """
+    Does weight() function work as expected?
+    """
+    symbols = [ 'H', 'K', 'eu', 'CM' ]
+    nuclides = [ (1,1), (19, 49), (63, 148), (96, 240) ]
+    weights  = [ 1.00782503207, 48.967450, 147.918086, 240.0555295, ]
+
+    for i in range(len(nuclides)):
+
+        assert weights[i] == nuclide_data.weight(*nuclides[i])
+        assert weights[i] == nuclide_data.weight(symbols[i], nuclides[i][1])
+        assert weights[i] == nuclide_data.weight(
+                              "{0}-{1}".format(symbols[i], nuclides[i][1]))
+
+
