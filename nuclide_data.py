@@ -366,3 +366,9 @@ class Nuclide:
             self.E = E
 
         self.element = z2sym[self.Z]
+
+    def __repr__(self):
+        if self.E==0.:
+            return "{x.element}-{x.A}".format(x=self)
+        else:
+            return "{x.element}-{x.A}, E* = {x.E} MeV".format(x=self)
