@@ -6,6 +6,7 @@ Data from NIST and NNDC
  * http://physics.nist.gov/cgi-bin/Compositions/stand_alone.pl?ele=&ascii=ascii2&isotype=all
  * http://www.nndc.bnl.gov/wallet/
 
+todo: make a nuclide class, with flexible __init__
 """
 
 import gzip
@@ -241,6 +242,20 @@ for (Z,A) in nuclides:
     isotopes[Z].append(copy.copy(A))
 
     isotopes[Z].sort()
+
+
+def zaid2za(zaid):
+    """
+    Convert ZZAAA to (Z,A) tuple.
+
+    """
+    # Ignores decimal and stuff after decimal.
+    zaid = str(int(zaid))
+
+    Z = int(zaid[:-3])
+    A = int(zaid[-3:])
+    return (Z, A)
+
 
 
 def nuc(Z, A, E=0.):

@@ -83,3 +83,11 @@ def test_weight():
                               "{0}-{1}".format(symbols[i], nuclides[i][1]))
 
 
+def test_zaids():
+    """Does zaid conversion work correctly?"""
+
+    zaids = [92235, 3006, "54135", "08016"]
+    zas = [(92,235), (3,6), (54, 135), (8, 16)]
+    for zaid, ref_za in zip(zaids, zas):
+        za = nuclide_data.zaid2za(zaid)
+        assert ref_za == za
