@@ -91,3 +91,84 @@ def test_zaids():
     for zaid, ref_za in zip(zaids, zas):
         za = nuclide_data.zaid2za(zaid)
         assert ref_za == za
+
+def test_Nuclide_class_init():
+    """Does Nuclide class correctly identify nuclide for a variety of inputs?"""
+
+    class Foo:
+       pass
+
+    nuc_obj = Foo()
+    nuc_obj.Z = 92
+    nuc_obj.A = 235
+
+    nuc_ids =   [ 'U235', 'U-235', '235U', '235-U',
+                  'u235', 'u-235', '235u', '235-u',
+                   92235, "92235",
+                   (92,235), [92, 235],
+                   {'Z':92, 'A':235},
+                   nuc_obj
+                ]
+
+    for nuc_id in nuc_ids:
+        nuclide = nuclide_data.Nuclide(nuc_id)
+
+        assert nuclide.Z == 92
+        assert nuclide.A == 235
+        assert nuclide.element == 'U'
+
+def test_Nuclide_class_init_2():
+    """Does Nuclide class correctly identify nuclide for a variety of inputs?"""
+
+    class Foo:
+       pass
+
+    nuc_obj = Foo()
+    nuc_obj.Z = 3
+    nuc_obj.A = 6
+
+    nuc_ids =   [ 'Li6', 'LI-6', '6LI', '6-Li',
+                  'li6', 'lI-6', '6li', '6-li',
+                   3006, "03006",
+                   (3,6), [3, 6],
+                   {'Z': 3, 'A':6},
+                   nuc_obj
+                ]
+
+    for nuc_id in nuc_ids:
+        nuclide = nuclide_data.Nuclide(nuc_id)
+
+        assert nuclide.Z == 3
+        assert nuclide.A == 6
+        assert nuclide.element == 'Li'
+
+def test_Nuclide_class_init_with_E():
+    """Does Nuclide class correctly get isomeric energy?"""
+    E_ref = 0.5
+
+    class Foo:
+       pass
+
+    nuc_obj = Foo()
+    nuc_obj.Z = 3
+    nuc_obj.A = 6
+    nuc_obj.E = E_ref
+
+    nuc_ids =   [ ('Li6', E_ref),  (3006, E_ref),
+                   ((3,6, E_ref),), ([3, 6, E_ref],),
+                   ({'Z': 3, 'A':6, 'E': E_ref},),
+                   (nuc_obj,)
+                ]
+
+    for nuc_id in nuc_ids:
+        nuclide = nuclide_data.Nuclide(*nuc_id)
+
+        # Primary check
+        assert np.allclose([nuclide.E,], [E_ref])
+
+        # Secondary check
+        assert nuclide.Z == 3
+        assert nuclide.A == 6
+        assert nuclide.element == 'Li'
+
+

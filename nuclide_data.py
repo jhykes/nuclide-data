@@ -6,11 +6,12 @@ Data from NIST and NNDC
  * http://physics.nist.gov/cgi-bin/Compositions/stand_alone.pl?ele=&ascii=ascii2&isotype=all
  * http://www.nndc.bnl.gov/wallet/
 
-todo: make a nuclide class, with flexible __init__
 """
 
+import re
 import gzip
 import copy
+import string
 
 import numpy as np
 
@@ -283,3 +284,85 @@ def weight(Z_or_symbol, A=None, E=0.):
     return return_nominal_value(Z_or_symbol, A, E, 'weight')
 
 
+class Nuclide:
+    """
+    Provide a convenient interface to various nuclide names and data.
+
+    Input nuc_id can be:
+       * Alphanumeric: 'U235', 'U-235', '235U', '235-U'
+           -- letters may be lower or uppercase
+       * ZAID: 92235, "92235"
+       * Tuple/list: (92,235), [92, 235] 
+       * Dictionary: {'Z':92, 'A':235}
+       * Object x with x.Z and x.A integer attributes
+
+    Energy level E in MeV.
+
+    Does not recognize metastable m, as in Am-242m
+    """
+    def __init__(self, nuc_id, E=0.):
+        try:
+            # Object with attributes
+            self.Z, self.A = nuc_id.Z, nuc_id.A
+            try:
+                self.E = nuc_id.E
+            except AttributeError:
+                self.E = 0.
+        except AttributeError:
+
+            try:
+                # Dictionary
+                self.Z, self.A = nuc_id['Z'], nuc_id['A']
+                try:
+                    self.E = nuc_id['E']
+                except (KeyError, TypeError):
+                    self.E = 0.
+            except (KeyError, TypeError):
+
+                # Integer ZAID
+                if type(nuc_id) is int:
+                    self.Z, self.A = zaid2za(nuc_id)
+
+                # List or tuple
+                if type(nuc_id) in [list, tuple]:
+                    if len(nuc_id) == 2:
+                        self.Z, self.A = nuc_id
+                    if len(nuc_id) == 3:
+                        self.Z, self.A, self.E = nuc_id
+
+                # String
+                if type(nuc_id) is str:
+
+                    # Alphanumeric
+                    if re.search('[a-zA-Z]', nuc_id):
+
+                        # upper case to make comparison easier
+                        nuc_id = nuc_id.upper()
+
+                        # Hyphenated
+                        if re.search('-', nuc_id):
+                            s1, s2 = nuc_id.split('-')
+                        else:
+                            s1 = filter(lambda x: x in string.ascii_letters, nuc_id)
+                            s2 = filter(lambda x: not (x in string.ascii_letters), nuc_id)
+                            
+
+                        # Not sure of the order of s1 & s2,
+                        #  so try one, then the other.
+                        try:
+                            self.Z = sym2z[s1.title()]
+                            self.A = int(s2)
+                        except:
+                            self.Z = sym2z[s2.title()]
+                            self.A = int(s1)
+                                
+                        
+                    else: # assume it is a ZAID string
+                        self.Z, self.A = zaid2za(nuc_id)
+        
+
+        # Assign E, unless it has already been set
+        if not hasattr(self, 'E'): 
+            self.E = E
+
+        self.element = z2sym[self.Z]
