@@ -8,6 +8,7 @@ Data from NIST and NNDC
 
 """
 
+import os.path
 import re
 import gzip
 import copy
@@ -16,6 +17,9 @@ import string
 import numpy as np
 
 import uncertainties as unc
+
+# Absolute path to this module
+basepath = os.path.dirname(__file__)
 
 # conversion factor from MeV/c^2 to amu
 mev_per_c_2_amu = 1. / 931.494061
@@ -41,7 +45,7 @@ def parse_one_chunk(chunk):
     return d
 
 # NIST data file
-data_file = "nist-nuclide-data.txt"
+data_file = os.path.join(basepath, "nist-nuclide-data.txt")
 
 # chunk file into nuclides
 nist_nuclide_raw_list = []
@@ -142,7 +146,7 @@ def parse_one_wallet_line(line):
     return d
 
 
-wallet_filename = 'nuclear-wallet-cards.txt.gz'
+wallet_filename = os.path.join(basepath, 'nuclear-wallet-cards.txt.gz')
 wallet_file = gzip.open(wallet_filename, 'rb')
 wallet_content = wallet_file.read()
 wallet_file.close()
