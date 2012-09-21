@@ -13,6 +13,7 @@ import re
 import gzip
 import copy
 import string
+from functools import total_ordering
 
 import numpy as np
 
@@ -288,6 +289,7 @@ def weight(Z_or_symbol, A=None, E=0.):
     return return_nominal_value(Z_or_symbol, A, E, 'weight')
 
 
+@total_ordering
 class Nuclide:
     """
     Provide a convenient interface to various nuclide names and data.
@@ -393,3 +395,19 @@ class Nuclide:
             return "{x.element}-{x.A}".format(x=self)
         else:
             return "{x.element}-{x.A}m".format(x=self)
+
+    def __key__(self):
+        return (self.Z, self.A, self.E)
+
+
+    def __hash__(self):
+        return hash(self.__key__())
+
+
+    def __eq__(self, other):
+        E_test = np.close([self.E,], [other.E])
+        return ( (self.Z, self.A) == (other.Z, other.A) ) and E_test
+
+
+    def __lt__(self, other):
+        return ( (self.Z, self.A, self.E) < (other.Z, other.A, other.E) )
