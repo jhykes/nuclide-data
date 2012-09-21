@@ -116,6 +116,8 @@ def test_Nuclide_class_init():
         assert nuclide.Z == 92
         assert nuclide.A == 235
         assert nuclide.element == 'U'
+        assert nuclide.metastable == False
+        assert nuclide.E == 0.
 
 def test_Nuclide_class_init_2():
     """Does Nuclide class correctly identify nuclide for a variety of inputs?"""
@@ -141,6 +143,9 @@ def test_Nuclide_class_init_2():
         assert nuclide.Z == 3
         assert nuclide.A == 6
         assert nuclide.element == 'Li'
+        assert nuclide.metastable == False
+        assert nuclide.E == 0.
+
 
 def test_Nuclide_class_init_with_E():
     """Does Nuclide class correctly get isomeric energy?"""
@@ -170,5 +175,29 @@ def test_Nuclide_class_init_with_E():
         assert nuclide.Z == 3
         assert nuclide.A == 6
         assert nuclide.element == 'Li'
+        assert nuclide.metastable == True
 
+
+def test_Nuclide_class_init_with_metastable():
+    """Does Nuclide class correctly understand metastable notation?"""
+    E_ref = 0.5
+
+    nuclide = nuclide_data.Nuclide('Li6m', E_ref)
+
+    # Primary check
+    assert np.allclose([nuclide.E,], [E_ref])
+    assert nuclide.Z == 3
+    assert nuclide.A == 6
+    assert nuclide.element == 'Li'
+    assert nuclide.metastable == True
+
+
+    nuclide = nuclide_data.Nuclide('LI-6M')
+
+    # Primary check
+    assert nuclide.E is np.inf
+    assert nuclide.Z == 3
+    assert nuclide.A == 6
+    assert nuclide.element == 'Li'
+    assert nuclide.metastable == True
 

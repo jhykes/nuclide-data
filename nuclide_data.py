@@ -299,12 +299,14 @@ class Nuclide:
        * Tuple/list: (92,235), [92, 235] 
        * Dictionary: {'Z':92, 'A':235}
        * Object x with x.Z and x.A integer attributes
+       * Metastable, only as "Am242m" or "AM-242M"
+            that is "Sym[-]AAAm", case insensitive
 
     Energy level E in MeV.
 
-    Does not recognize metastable m, as in Am-242m
+    If metastable and no E provided, it is set to np.inf.
     """
-    def __init__(self, nuc_id, E=0.):
+    def __init__(self, nuc_id, E=0., metastable=False):
         try:
             # Object with attributes
             self.Z, self.A = nuc_id.Z, nuc_id.A
@@ -343,6 +345,18 @@ class Nuclide:
                         # upper case to make comparison easier
                         nuc_id = nuc_id.upper()
 
+                        # Metastable
+                        if ( nuc_id[0] in string.ascii_letters 
+                                          and nuc_id[-1] == 'M'):
+                            self.metastable = True
+                            nuc_id = nuc_id[:-1]
+
+                            # If metastable & E not provided,
+                            #  set E = inf
+                            if E == 0.:
+                                E = np.inf
+
+
                         # Hyphenated
                         if re.search('-', nuc_id):
                             s1, s2 = nuc_id.split('-')
@@ -369,10 +383,13 @@ class Nuclide:
         if not hasattr(self, 'E'): 
             self.E = E
 
+        if not hasattr(self, 'metastable'): 
+            self.metastable = (self.E > 0.)
+
         self.element = z2sym[self.Z]
 
     def __repr__(self):
         if self.E==0.:
             return "{x.element}-{x.A}".format(x=self)
         else:
-            return "{x.element}-{x.A}, E* = {x.E} MeV".format(x=self)
+            return "{x.element}-{x.A}m".format(x=self)
