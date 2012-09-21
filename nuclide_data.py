@@ -9,6 +9,7 @@ Data from NIST and NNDC
 """
 
 import os.path
+import warnings
 import re
 import gzip
 import copy
@@ -390,6 +391,12 @@ class Nuclide:
 
         self.element = z2sym[self.Z]
 
+        try:
+            self.weight = return_nominal_value(self.Z, self.A, self.E, 'weight')
+        except:
+            warnings.warn("nuclide weight not available")
+
+
     def __repr__(self):
         if self.E==0.:
             return "{x.element}-{x.A}".format(x=self)
@@ -405,9 +412,10 @@ class Nuclide:
 
 
     def __eq__(self, other):
-        E_test = np.close([self.E,], [other.E])
+        E_test = np.allclose([self.E,], [other.E])
         return ( (self.Z, self.A) == (other.Z, other.A) ) and E_test
 
 
     def __lt__(self, other):
         return ( (self.Z, self.A, self.E) < (other.Z, other.A, other.E) )
+
