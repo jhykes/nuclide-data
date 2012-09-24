@@ -307,8 +307,39 @@ class Nuclide:
 
     Energy level E in MeV.
 
+    For a select set of nuclides (see default_isomer_E.keys())
+      a default value for E is set if no E is supplied.
+
     If metastable and no E provided, it is set to np.inf.
     """
+
+    # From NNDC Chart of Nuclides
+    default_isomer_E = {
+        'Fe-53m'  : 3.0404,
+        'Co-60m'  : 0.0586,
+        'Cu-68m'  : 0.7216,
+        'Se-81m'  : 0.1030,
+        'Kr-85m'  : 0.3050,
+        'Ge-77m'  : 0.1597,
+        'Nb-93m'  : 0.0308,
+        'Ag-110m' : 0.1176,
+        'In-113m' : 0.3917,
+        'Te-127m' : 0.0883,
+        'Sn-125m' : 0.0275,
+        'Te-129m' : 0.1055,
+        'Sn-123m' : 0.0246,
+        'Xe-129m' : 0.2361,
+        'Xe-135m' : 0.5266,
+        'Pr-144m' : 0.0590,
+        'Pm-148m' : 0.1379,
+        'Eu-154m' : 0.1453,
+        'Dy-157m' : 0.1994,
+        'W-185m'  : 0.1974,
+        'Pb-207m' : 1.6334,
+        'Pa-234m' : 0.0739,
+        'Am-242m' : 0.0486,
+    }
+
     def __init__(self, nuc_id, E=0., metastable=False):
         try:
             # Object with attributes
@@ -391,6 +422,12 @@ class Nuclide:
 
         self.element = z2sym[self.Z]
 
+        # Assign E for list of metastable nuclides if E wasn't provided
+        if (self.E is np.inf and 
+               self.__repr__() in self.default_isomer_E.keys()):
+            self.E = self.default_isomer_E[self.__repr__()]
+            
+            
         try:
             self.weight = return_nominal_value(self.Z, self.A, self.E, 'weight')
         except:
