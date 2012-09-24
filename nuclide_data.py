@@ -322,14 +322,21 @@ class Nuclide:
         'Kr-85m'  : 0.3050,
         'Ge-77m'  : 0.1597,
         'Nb-93m'  : 0.0308,
+        'Nb-95m'  : 0.2357,
+        'Nb-97m'  : 0.7434,
+        'Tc-99m'  : 0.1427,
+        'Rh-103m' : 0.0398,
         'Ag-110m' : 0.1176,
         'In-113m' : 0.3917,
+        'Te-125m' : 0.1448,
         'Te-127m' : 0.0883,
-        'Sn-125m' : 0.0275,
         'Te-129m' : 0.1055,
         'Sn-123m' : 0.0246,
+        'Sn-125m' : 0.0275,
+        'Sb-126m' : 0.0177,
         'Xe-129m' : 0.2361,
         'Xe-135m' : 0.5266,
+        'Ba-137m' : 0.6617,
         'Pr-144m' : 0.0590,
         'Pm-148m' : 0.1379,
         'Eu-154m' : 0.1453,
@@ -338,7 +345,10 @@ class Nuclide:
         'Pb-207m' : 1.6334,
         'Pa-234m' : 0.0739,
         'Am-242m' : 0.0486,
+        'Am-244m' : 0.0861,
+        'Cm-244m' : 1.0402
     }
+
 
     def __init__(self, nuc_id, E=0., metastable=False):
         try:
@@ -431,7 +441,7 @@ class Nuclide:
         try:
             self.weight = return_nominal_value(self.Z, self.A, self.E, 'weight')
         except:
-            warnings.warn("nuclide weight not available")
+            warnings.warn("nuclide weight not available for {}".format(self))
 
 
     def __repr__(self):
