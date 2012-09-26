@@ -232,7 +232,7 @@ def return_nominal_value(Z_or_symbol, A, E, attribute):
         
     try:
         return nuclides[(Z,A)][E][attribute].nominal_value
-    except ValueError:
+    except (ValueError, AttributeError):
         return nuclides[(Z,A)][E][attribute]
 
 
@@ -443,6 +443,11 @@ class Nuclide:
         except:
             warnings.warn("nuclide weight not available for {}".format(self))
 
+    def decay_const(self):
+        return return_nominal_value(self.Z, self.A, self.E, 'lambda')
+
+    def half_life(self):
+        return return_nominal_value(self.Z, self.A, self.E, 'half-life')
 
     def __repr__(self):
         if self.E==0.:
