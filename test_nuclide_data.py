@@ -149,19 +149,19 @@ def test_Nuclide_class_init_2():
 
 def test_Nuclide_class_init_with_E():
     """Does Nuclide class correctly get isomeric energy?"""
-    E_ref = 0.5
+    E_ref = 0.2283
 
     class Foo:
        pass
 
     nuc_obj = Foo()
-    nuc_obj.Z = 3
-    nuc_obj.A = 6
+    nuc_obj.Z = 13
+    nuc_obj.A = 26
     nuc_obj.E = E_ref
 
-    nuc_ids =   [ ('Li6', E_ref),  (3006, E_ref),
-                   ((3,6, E_ref),), ([3, 6, E_ref],),
-                   ({'Z': 3, 'A':6, 'E': E_ref},),
+    nuc_ids =   [ ('Al26', E_ref),  (13026, E_ref),
+                   ((13, 26, E_ref),), ([13, 26, E_ref],),
+                   ({'Z': 13, 'A': 26, 'E': E_ref},),
                    (nuc_obj,)
                 ]
 
@@ -172,9 +172,9 @@ def test_Nuclide_class_init_with_E():
         assert np.allclose([nuclide.E,], [E_ref])
 
         # Secondary check
-        assert nuclide.Z == 3
-        assert nuclide.A == 6
-        assert nuclide.element == 'Li'
+        assert nuclide.Z == 13
+        assert nuclide.A == 26
+        assert nuclide.element == 'Al'
         assert nuclide.metastable == True
 
 
@@ -200,4 +200,47 @@ def test_Nuclide_class_init_with_metastable():
     assert nuclide.A == 6
     assert nuclide.element == 'Li'
     assert nuclide.metastable == True
+
+
+def test_Nuclide_class_MAT():
+    """Does Nuclide class correctly set MAT?"""
+
+    nuc_ids = {
+        'H -  1 ' : 125,
+        'He-  4 ' : 228,
+        'N - 15 ' : 728,
+        'O - 16 ' : 825,
+        'Si- 29 ' : 1428,
+        'Ca- 44 ' : 2037,
+        'Sc- 45 ' : 2125,
+        'Fe- 54 ' : 2625,
+        'Co- 58 ' : 2722,
+        'Co- 58M' : 2723,
+        'Se- 82 ' : 3449,
+        'Sr- 87 ' : 3834,
+        'Ag-109 ' : 4731,
+        'Ag-110M' : 4735,
+        'Cd-115M' : 4853,
+        'Sn-112 ' : 5025,
+        'Gd-152 ' : 6425,
+        'Ra-226 ' : 8834,
+        'U -235 ' : 9228,
+        'Am-242 ' : 9546,
+        'Am-242M' : 9547,
+        'Am-243 ' : 9549,
+        'Am-244 ' : 9552,
+        'Am-244M' : 9553,
+        'Cm-240 ' : 9625,
+        'Cm-241 ' : 9628,
+        'Bk-246 ' : 9743,
+        'Cf-254 ' : 9867,
+        'Es-253 ' : 9913,
+        'Es-254 ' : 9914,
+        'Es-254M' : 9915,
+        'Es-255 ' : 9916,
+        'Fm-255 ' : 9936,
+       }
+
+    for nuc_id in nuc_ids:
+        assert nuclide_data.Nuclide(nuc_id).mat == nuc_ids[nuc_id]
 

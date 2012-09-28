@@ -26,6 +26,60 @@ basepath = os.path.dirname(__file__)
 # conversion factor from MeV/c^2 to amu
 mev_per_c_2_amu = 1. / 931.494061
 
+# From NNDC Chart of Nuclides
+#  obviously not a comprehensive list, but enough to get started
+default_isomer_E = {
+        'Al-26m'  : 0.2283,
+        'Sc-44m'  : 0.2710,
+        'Fe-53m'  : 3.0404,
+        'Co-60m'  : 0.0586,
+        'Co-62m'  : 0.0220,
+        'Cu-68m'  : 0.7216,
+        'Se-81m'  : 0.1030,
+        'Br-82m'  : 0.0459,
+        'Kr-85m'  : 0.3050,
+        'Ge-77m'  : 0.1597,
+        'Nb-93m'  : 0.0308,
+        'Nb-95m'  : 0.2357,
+        'Nb-97m'  : 0.7434,
+        'Tc-99m'  : 0.1427,
+        'Rh-103m' : 0.0398,
+        'Ag-106m' : 0.0897,
+        'Ag-110m' : 0.1176,
+        'In-113m' : 0.3917,
+        'Te-125m' : 0.1448,
+        'Te-127m' : 0.0883,
+        'Te-129m' : 0.1055,
+        'Sn-123m' : 0.0246,
+        'Sn-125m' : 0.0275,
+        'Sb-126m' : 0.0177,
+        'Xe-129m' : 0.2361,
+        'Xe-135m' : 0.5266,
+        'Ba-137m' : 0.6617,
+        'Pr-138m' : 0.3640,
+        'Pr-144m' : 0.0590,
+        'Pm-148m' : 0.1379,
+        'Eu-150m' : 0.0417,
+        'Eu-154m' : 0.1453,
+        'Dy-157m' : 0.1994,
+        'Ho-162m' : 0.1059,
+        'W-185m'  : 0.1974,
+        'Pt-185m' : 0.1498,
+        'Au-200m' : 0.9620,
+        'Pb-204m' : 2.1859,
+        'Pb-207m' : 1.6334,
+        'Bi-210m' : 0.2713,
+        'Pa-234m' : 0.0739,
+        'Am-242m' : 0.0486,
+        'Am-244m' : 0.0861,
+        'Cm-244m' : 1.0402,
+        'Es-254m' : 0.0842,
+    }
+
+
+
+    
+
 # NIST data -------------------------------------------------------------
 def split_line(line):
     return map(str.strip, line.split('='))
@@ -236,6 +290,30 @@ def return_nominal_value(Z_or_symbol, A, E, attribute):
         return nuclides[(Z,A)][E][attribute]
 
 
+# ENDF-6 MAT data -------------------------------------------------------
+#  mats is dictionary with
+#    key : (Z, A, metastable), Z, A are int, metastable is bool
+#    value : MAT nuclide id, integer, from ENDF-6 list
+mat_file = os.path.join(basepath, "n-ENDF-B-VII.1.endf.list")
+mats = {}
+for line in open(mat_file):
+    # Skip comment line
+    if line.startswith('#'): continue
+
+    # Grab Z, A, and MAT
+    Z = int(line[6:9])
+    A = int(line[13:16])
+    mat = int(line[72:76])
+
+    # Is it metastable?
+    metastable = (line[16] == 'M')
+
+    key = (Z, A, metastable)
+
+    mats[key] = int(mat)
+
+
+
 # ---------------------------------------------------------------------------- #
 # means intended for public access of data
 
@@ -313,54 +391,6 @@ class Nuclide:
     If metastable and no E provided, it is set to np.inf.
     """
 
-    # From NNDC Chart of Nuclides
-    #  obviously not a comprehensive list, but enough to get started
-    default_isomer_E = {
-        'Al-26m'  : 0.2283,
-        'Sc-44m'  : 0.2710,
-        'Fe-53m'  : 3.0404,
-        'Co-60m'  : 0.0586,
-        'Co-62m'  : 0.0220,
-        'Cu-68m'  : 0.7216,
-        'Se-81m'  : 0.1030,
-        'Br-82m'  : 0.0459,
-        'Kr-85m'  : 0.3050,
-        'Ge-77m'  : 0.1597,
-        'Nb-93m'  : 0.0308,
-        'Nb-95m'  : 0.2357,
-        'Nb-97m'  : 0.7434,
-        'Tc-99m'  : 0.1427,
-        'Rh-103m' : 0.0398,
-        'Ag-106m' : 0.0897,
-        'Ag-110m' : 0.1176,
-        'In-113m' : 0.3917,
-        'Te-125m' : 0.1448,
-        'Te-127m' : 0.0883,
-        'Te-129m' : 0.1055,
-        'Sn-123m' : 0.0246,
-        'Sn-125m' : 0.0275,
-        'Sb-126m' : 0.0177,
-        'Xe-129m' : 0.2361,
-        'Xe-135m' : 0.5266,
-        'Ba-137m' : 0.6617,
-        'Pr-138m' : 0.3640,
-        'Pr-144m' : 0.0590,
-        'Pm-148m' : 0.1379,
-        'Eu-150m' : 0.0417,
-        'Eu-154m' : 0.1453,
-        'Dy-157m' : 0.1994,
-        'Ho-162m' : 0.1059,
-        'W-185m'  : 0.1974,
-        'Pt-185m' : 0.1498,
-        'Au-200m' : 0.9620,
-        'Pb-204m' : 2.1859,
-        'Pb-207m' : 1.6334,
-        'Bi-210m' : 0.2713,
-        'Pa-234m' : 0.0739,
-        'Am-242m' : 0.0486,
-        'Am-244m' : 0.0861,
-        'Cm-244m' : 1.0402
-    }
 
 
     def __init__(self, nuc_id, E=0., metastable=False):
@@ -417,9 +447,11 @@ class Nuclide:
                         # Hyphenated
                         if re.search('-', nuc_id):
                             s1, s2 = nuc_id.split('-')
+                            s1 = s1.strip()
+                            s2 = s2.strip()
                         else:
                             s1 = filter(lambda x: x in string.ascii_letters, nuc_id)
-                            s2 = filter(lambda x: not (x in string.ascii_letters), nuc_id)
+                            s2 = filter(lambda x: not (x in string.ascii_letters), nuc_id).strip()
                             
 
                         # Not sure of the order of s1 & s2,
@@ -447,14 +479,20 @@ class Nuclide:
 
         # Assign E for list of metastable nuclides if E wasn't provided
         if (self.E is np.inf and 
-               self.__repr__() in self.default_isomer_E.keys()):
-            self.E = self.default_isomer_E[self.__repr__()]
+               self.__repr__() in default_isomer_E.keys()):
+            self.E = default_isomer_E[self.__repr__()]
             
             
         try:
             self.weight = return_nominal_value(self.Z, self.A, self.E, 'weight')
         except:
             warnings.warn("nuclide weight not available for {}".format(self))
+
+        # Set MAT for ENDF6
+        try:
+            self.mat = mats[(self.Z, self.A, self.metastable)]
+        except:
+            warnings.warn("nuclide {} not on ENDFB-VII.1 neutron library".format(self))
 
     def decay_const(self):
         return return_nominal_value(self.Z, self.A, self.E, 'lambda')
