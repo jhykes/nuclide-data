@@ -201,6 +201,16 @@ def test_Nuclide_class_init_with_metastable():
     assert nuclide.element == 'Li'
     assert nuclide.metastable == True
 
+    nuclide = nuclide_data.Nuclide((3,6), metastable=True)
+
+    # Primary check
+    assert nuclide.E is np.inf
+    assert nuclide.Z == 3
+    assert nuclide.A == 6
+    assert nuclide.element == 'Li'
+    assert nuclide.metastable == True
+
+
 
 def test_Nuclide_class_MAT():
     """Does Nuclide class correctly set MAT?"""

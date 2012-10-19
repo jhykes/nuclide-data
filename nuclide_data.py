@@ -32,6 +32,7 @@ default_isomer_E = {
         'Al-26m'  : 0.2283,
         'Sc-44m'  : 0.2710,
         'Fe-53m'  : 3.0404,
+        'Co-58m'  : 0.0250,
         'Co-60m'  : 0.0586,
         'Co-62m'  : 0.0220,
         'Cu-68m'  : 0.7216,
@@ -47,6 +48,7 @@ default_isomer_E = {
         'Ag-106m' : 0.0897,
         'Ag-110m' : 0.1176,
         'In-113m' : 0.3917,
+        'Cd-115m' : 0.1810,
         'Te-125m' : 0.1448,
         'Te-127m' : 0.0883,
         'Te-129m' : 0.1055,
@@ -63,6 +65,7 @@ default_isomer_E = {
         'Eu-154m' : 0.1453,
         'Dy-157m' : 0.1994,
         'Ho-162m' : 0.1059,
+        'Ho-166m' : 0.0060,
         'W-185m'  : 0.1974,
         'Pt-185m' : 0.1498,
         'Au-200m' : 0.9620,
@@ -243,7 +246,10 @@ for el in wallet_nuclide_processed_list:
         for k in isomer_keys:
             isomer[k] = el[k]
 
-        isomer['lambda'] = np.log(2.) / isomer['half-life']
+        if isomer['half-life'] == 0.:
+            isomer['lambda'] = np.inf
+        else:
+            isomer['lambda'] = np.log(2.) / isomer['half-life']
 
         if (Z,A) in nist_nuclides:
             isomer['weight'] = nist_nuclides[(Z,A)]['Relative Atomic Mass']
@@ -377,7 +383,8 @@ class Nuclide:
        * Alphanumeric: 'U235', 'U-235', '235U', '235-U'
            -- letters may be lower or uppercase
        * ZAID: 92235, "92235"
-       * Tuple/list: (92,235), [92, 235] 
+       * Tuple/list: (92, 235), [92, 235] 
+       * Tuple/list with energy: (92, 235, 0.5), [92, 235, 0.5] 
        * Dictionary: {'Z':92, 'A':235}
        * Object x with x.Z and x.A integer attributes
        * Metastable, only as "Am242m" or "AM-242M"
@@ -389,27 +396,30 @@ class Nuclide:
       a default value for E is set if no E is supplied.
 
     If metastable and no E provided, it is set to np.inf.
+
+    If E is provides as part of nuc_id, then it overrides the value
+    provided to the keyword.
     """
 
 
-
     def __init__(self, nuc_id, E=0., metastable=False):
+
         try:
             # Object with attributes
             self.Z, self.A = nuc_id.Z, nuc_id.A
             try:
-                self.E = nuc_id.E
+                E = nuc_id.E
             except AttributeError:
-                self.E = 0.
+                E = 0.
         except AttributeError:
 
             try:
                 # Dictionary
                 self.Z, self.A = nuc_id['Z'], nuc_id['A']
                 try:
-                    self.E = nuc_id['E']
+                    E = nuc_id['E']
                 except (KeyError, TypeError):
-                    self.E = 0.
+                    E = 0.
             except (KeyError, TypeError):
 
                 # Integer ZAID
@@ -421,7 +431,7 @@ class Nuclide:
                     if len(nuc_id) == 2:
                         self.Z, self.A = nuc_id
                     if len(nuc_id) == 3:
-                        self.Z, self.A, self.E = nuc_id
+                        self.Z, self.A, E = nuc_id
 
                 # String
                 if type(nuc_id) is str:
@@ -435,13 +445,8 @@ class Nuclide:
                         # Metastable
                         if ( nuc_id[0] in string.ascii_letters 
                                           and nuc_id[-1] == 'M'):
-                            self.metastable = True
+                            metastable = True
                             nuc_id = nuc_id[:-1]
-
-                            # If metastable & E not provided,
-                            #  set E = inf
-                            if E == 0.:
-                                E = np.inf
 
 
                         # Hyphenated
@@ -467,13 +472,17 @@ class Nuclide:
                     else: # assume it is a ZAID string
                         self.Z, self.A = zaid2za(nuc_id)
         
+        # Metastable can be specified by either E or metastable flag.
+        #  If flag is given but E is not, then set E to inf as
+        #  an indication that it is not stable, but that the exact
+        #  E value isn't given.
+        if metastable and E==0.:
+            E = np.inf
+
+        self.metastable = E > 0.
 
         # Assign E, unless it has already been set
-        if not hasattr(self, 'E'): 
-            self.E = E
-
-        if not hasattr(self, 'metastable'): 
-            self.metastable = (self.E > 0.)
+        self.E = E
 
         self.element = z2sym[self.Z]
 
@@ -493,6 +502,9 @@ class Nuclide:
             self.mat = mats[(self.Z, self.A, self.metastable)]
         except:
             warnings.warn("nuclide {} not on ENDFB-VII.1 neutron library".format(self))
+
+    def zaid(self):
+        return self.Z*1000 + self.A
 
     def decay_const(self):
         return return_nominal_value(self.Z, self.A, self.E, 'lambda')
