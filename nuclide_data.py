@@ -26,58 +26,6 @@ basepath = os.path.dirname(__file__)
 # conversion factor from MeV/c^2 to amu
 mev_per_c_2_amu = 1. / 931.494061
 
-# From NNDC Chart of Nuclides
-#  obviously not a comprehensive list, but enough to get started
-default_isomer_E = {
-        'Al-26m'  : 0.2283,
-        'Sc-44m'  : 0.2710,
-        'Fe-53m'  : 3.0404,
-        'Co-58m'  : 0.0250,
-        'Co-60m'  : 0.0586,
-        'Co-62m'  : 0.0220,
-        'Cu-68m'  : 0.7216,
-        'Se-81m'  : 0.1030,
-        'Br-82m'  : 0.0459,
-        'Kr-85m'  : 0.3050,
-        'Ge-77m'  : 0.1597,
-        'Nb-93m'  : 0.0308,
-        'Nb-95m'  : 0.2357,
-        'Nb-97m'  : 0.7434,
-        'Tc-99m'  : 0.1427,
-        'Rh-103m' : 0.0398,
-        'Ag-106m' : 0.0897,
-        'Ag-110m' : 0.1176,
-        'In-113m' : 0.3917,
-        'Cd-115m' : 0.1810,
-        'Te-125m' : 0.1448,
-        'Te-127m' : 0.0883,
-        'Te-129m' : 0.1055,
-        'Sn-123m' : 0.0246,
-        'Sn-125m' : 0.0275,
-        'Sb-126m' : 0.0177,
-        'Xe-129m' : 0.2361,
-        'Xe-135m' : 0.5266,
-        'Ba-137m' : 0.6617,
-        'Pr-138m' : 0.3640,
-        'Pr-144m' : 0.0590,
-        'Pm-148m' : 0.1379,
-        'Eu-150m' : 0.0417,
-        'Eu-154m' : 0.1453,
-        'Dy-157m' : 0.1994,
-        'Ho-162m' : 0.1059,
-        'Ho-166m' : 0.0060,
-        'W-185m'  : 0.1974,
-        'Pt-185m' : 0.1498,
-        'Au-200m' : 0.9620,
-        'Pb-204m' : 2.1859,
-        'Pb-207m' : 1.6334,
-        'Bi-210m' : 0.2713,
-        'Pa-234m' : 0.0739,
-        'Am-242m' : 0.0486,
-        'Am-244m' : 0.0861,
-        'Cm-244m' : 1.0402,
-        'Es-254m' : 0.0842,
-    }
 
 
 
@@ -202,6 +150,8 @@ def parse_one_wallet_line(line):
     d['stable'] = (d['half-life string'] == 'STABLE')
     d['half-life'] = float(line[124:133])   # in seconds
 
+    if d['stable']: d['half-life'] = np.inf
+
     return d
 
 
@@ -263,6 +213,18 @@ for el in wallet_nuclide_processed_list:
         isomer['decay modes'][el['decay mode']][k] = el[k]
 
 
+default_isomer_E = {}
+meta_suffixes = 'mnopqrs'
+for n in nuclides:
+    Es = nuclides[n].keys()
+
+    if n[0] == 0: continue
+
+    nuc_string = '{}-{}'.format(z2sym[n[0]], n[1])
+
+    if len(Es) > 1:
+        for i,E in enumerate(Es[1:]):
+            default_isomer_E[nuc_string+meta_suffixes[i]] = E
 
 
 def return_nominal_value(Z_or_symbol, A, E, attribute):
@@ -533,4 +495,5 @@ class Nuclide:
 
     def __lt__(self, other):
         return ( (self.Z, self.A, self.E) < (other.Z, other.A, other.E) )
+
 
