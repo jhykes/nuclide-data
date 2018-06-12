@@ -40,7 +40,7 @@ def test_isomers():
 def ufloat_equiv(a, b):
     try:
         return ( np.allclose([a.nominal_value], [b.nominal_value]) 
-             and np.allclose([a.std_dev()], [b.std_dev()]) )
+             and np.allclose([a.std_dev], [b.std_dev]) )
     except AttributeError:
         return a == b 
         #return np.allclose([a], [b]) 
@@ -50,11 +50,11 @@ def test_data():
     Do we have the correct weight, abundance, and half-life for select nuclides?
     """
     nuclides = [ (1,1), (19, 49), (63, 148), (96, 240) ]
-    weights  = [ unc.ufloat("1.00782503207(10)"),
-                 unc.ufloat("48.967450(80)"),
-                 unc.ufloat("147.918086(11)"),
-                 unc.ufloat("240.0555295(25)"), ]
-    abundances  = [ unc.ufloat("0.999885(70)"), 0., 0., 0. ]
+    weights  = [ unc.ufloat_fromstr("1.00782503207(10)"),
+                 unc.ufloat_fromstr("48.967450(80)"),
+                 unc.ufloat_fromstr("147.918086(11)"),
+                 unc.ufloat_fromstr("240.0555295(25)"), ]
+    abundances  = [ unc.ufloat_fromstr("0.999885(70)"), 0., 0., 0. ]
     half_lifes = [ 0., 1.26E+00, 4.71E+06, 2.33E+06]
     stable = [True, False, False, False]
 

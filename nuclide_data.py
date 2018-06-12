@@ -42,7 +42,7 @@ def parse_one_chunk(chunk):
         if v.find('.') >= 0:
             if v.endswith('#'):
                 v = v[:-1]
-            d[k] = unc.ufloat(v)
+            d[k] = unc.ufloat_fromstr(v)
         else:
             try:
                 d[k] = int(v)
@@ -101,12 +101,12 @@ for Z in nist_per_element:
 
 def nndc_unc(string, delimiter):
     a, b = map(float, string.split(delimiter))
-    return unc.ufloat((a,b))
+    return unc.ufloat(a,b)
 
 def nndc_abun(string, delimiter):
     a, b = string.split(delimiter)
     unc_string = "{0}({1})".format(float(a), int(b))
-    return unc.ufloat(unc_string)
+    return unc.ufloat_fromstr(unc_string)
 
 def do_if_present(string, func, default=None):
     string = string.strip()
@@ -133,7 +133,7 @@ def parse_one_wallet_line(line):
     d['Z'] = int(line[6:9])
     d['symbol'] = line[10:12].strip().title()
 
-    d['mass excess'] = unc.ufloat(map(float, (line[97:105], line[105:113]))) # in MeV
+    d['mass excess'] = unc.ufloat(*map(float, (line[97:105], line[105:113]))) # in MeV
     d['systematics mass'] = (line[114] == 'S')
     d['abundance'] = do_if_present(line[81:96], process_abundance, default=0.)
 
