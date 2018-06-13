@@ -56,7 +56,7 @@ class TestNuclideData(unittest.TestCase):
                      unc.ufloat_fromstr("147.918086(11)"),
                      unc.ufloat_fromstr("240.0555295(25)"), ]
         abundances  = [ unc.ufloat_fromstr("0.999885(70)"), 0., 0., 0. ]
-        half_lifes = [ 0., 1.26E+00, 4.71E+06, 2.33E+06]
+        half_lifes = [ np.inf, 1.26E+00, 4.71E+06, 2.33E+06]
         stable = [True, False, False, False]
 
         for i in range(len(nuclides)):
