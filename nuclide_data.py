@@ -434,10 +434,14 @@ class Nuclide:
                     else: # assume it is a ZAID string
                         self.Z, self.A = zaid2za(nuc_id)
         
-        # Metastable can be specified by either E or metastable flag.
+        # Metastable can be specified by either E, metastable flag, or A > 400.
         #  If flag is given but E is not, then set E to inf as
         #  an indication that it is not stable, but that the exact
         #  E value isn't given.
+        if self.A > 400:
+            metastable = True
+            self.A -= 400
+
         if metastable and E==0.:
             E = np.inf
 
@@ -465,8 +469,11 @@ class Nuclide:
         except:
             warnings.warn("nuclide {} not on ENDFB-VII.1 neutron library".format(self))
 
-    def zaid(self):
-        return self.Z*1000 + self.A
+    def zaid(self, alternate=False):
+        if self.metastable and alternate:
+            return self.Z*1000 + self.A + 400
+        else:
+            return self.Z*1000 + self.A
 
     def decay_const(self):
         return return_nominal_value(self.Z, self.A, self.E, 'lambda')
