@@ -212,6 +212,18 @@ class TestNuclideData(unittest.TestCase):
         assert nuclide.metastable == True
 
 
+    def test_Nuclide_class_init_with_alternate_metastable(self):
+
+        alternate_zaid = nuclide_data.Nuclide('Li6').zaid() + 400
+        nuclide = nuclide_data.Nuclide(alternate_zaid)
+
+        assert nuclide.Z == 3
+        assert nuclide.A == 6
+        assert nuclide.element == 'Li'
+        assert nuclide.metastable == True
+        assert nuclide.zaid() == 3006
+        assert nuclide.zaid(alternate=True) == 3406
+
 
     def test_Nuclide_class_MAT(self):
         """Does Nuclide class correctly set MAT?"""
