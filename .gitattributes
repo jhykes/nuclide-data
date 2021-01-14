@@ -11,6 +11,7 @@
 *.gz binary
 *.npy binary
 *.docx binary
+*.pdf binary
 #*.docx binary diff=word
 *.png binary
 #*.png diff=exif
