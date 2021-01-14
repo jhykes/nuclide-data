@@ -15,10 +15,10 @@ class TestNuclideData(unittest.TestCase):
         """Do we have the correct isotopes for select elements?"""
 
         zs = [1, 8, 56, 95]
-        isos = [range(1, 8),
+        isos = list(map(list, [range(1, 8),
                 range(12, 29),
                 range(112, 154),
-                range(230, 250),]
+                range(230, 250),]))
         for z, ref_iso in zip(zs, isos):
             iso = nuclide_data.isotopes[z]
             assert ref_iso == iso

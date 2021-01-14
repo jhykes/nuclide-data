@@ -155,17 +155,21 @@ def parse_one_wallet_line(line):
     return d
 
 
-wallet_filename = os.path.join(basepath, 'nuclear-wallet-cards.txt.gz')
-wallet_file = gzip.open(wallet_filename, 'rb')
-wallet_content = wallet_file.read()
-wallet_file.close()
+def load_wallet_content():
+    wallet_filename = os.path.join(basepath, 'nuclear-wallet-cards.txt.gz')
+    wallet_file = gzip.open(wallet_filename, 'rt', encoding='utf8')
+    try:
+        return wallet_file.read()
+    finally:
+        wallet_file.close()
 
+wallet_content = load_wallet_content()
 wallet_lines = wallet_content.split('\n')[:-1]
 
 wallet_nuclide_processed_list = []
 for line in wallet_lines:
-    wallet_nuclide_processed_list.append( parse_one_wallet_line(line) )
     d = parse_one_wallet_line(line)
+    wallet_nuclide_processed_list.append(d)
 
 
 isomer_keys = ['symbol', 'mass excess', 'abundance', 'isomeric',
@@ -216,7 +220,7 @@ for el in wallet_nuclide_processed_list:
 default_isomer_E = {}
 meta_suffixes = 'mnopqrs'
 for n in nuclides:
-    Es = nuclides[n].keys()
+    Es = list(nuclides[n].keys())
 
     if n[0] == 0: continue
 
@@ -324,7 +328,7 @@ def isomers(Z, A):
 
     Energies in MeV.
     """
-    isom = nuclides[(Z,A)].keys()
+    isom = list(nuclides[(Z,A)].keys())
     isom.sort()
     return isom
 
@@ -417,8 +421,8 @@ class Nuclide:
                             s1 = s1.strip()
                             s2 = s2.strip()
                         else:
-                            s1 = filter(lambda x: x in string.ascii_letters, nuc_id)
-                            s2 = filter(lambda x: not (x in string.ascii_letters), nuc_id).strip()
+                            s1 = ''.join(filter(lambda x: x in string.ascii_letters, nuc_id))
+                            s2 = ''.join(filter(lambda x: not (x in string.ascii_letters), nuc_id)).strip()
                             
 
                         # Not sure of the order of s1 & s2,
